@@ -28,6 +28,13 @@ This is a float argument with the default value of 3.0. Increasing this will mak
 
 This is an integer argument with the default value of 512. Increasing this will increase the details of the image. This is especially usefuly when you want to generate a zoomed in view of the Mandelbrot fractal.
 
+### Color Mode
+
+This is an integer argument with the default value of 0. This can be used to alter the coloring mode of the final image. Please use the following information to see the available options:
+
+0       Simple Grayscale
+1       Smooth Grayscale
+
 ### Output Image
 
 This is a string argument with the default value of "mandelbrot.jpg". Note that changing the extension from jpg to png or any other format will not change the actual file format. Use this argument to prevent overwriting previous images.

@@ -12,3 +12,4 @@ EXTRA_DIST = $(top_srcdir)/include/stb_image_write.h \
     $(top_srcdir)/include/common.h \
     $(top_srcdir)/include/util.h
 AM_CPPFLAGS = -I$(top_srcdir)/include
+LDADD = -lm

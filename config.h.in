@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Simple grayscale coloring mode */
+#undef DEFAULT_COLOR_MODE
+
 /* The default output image */
 #undef DEFAULT_IMAGE_OUTPUT
 

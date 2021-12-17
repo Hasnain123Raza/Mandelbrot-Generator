@@ -111,6 +111,7 @@ am_mandelbrot_OBJECTS = $(top_builddir)/src/main.$(OBJEXT) \
 	$(top_builddir)/src/util.$(OBJEXT)
 mandelbrot_OBJECTS = $(am_mandelbrot_OBJECTS)
 mandelbrot_LDADD = $(LDADD)
+mandelbrot_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -298,6 +299,7 @@ EXTRA_DIST = $(top_srcdir)/include/stb_image_write.h \
     $(top_srcdir)/include/util.h
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
+LDADD = -lm
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 

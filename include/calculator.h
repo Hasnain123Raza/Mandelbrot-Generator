@@ -6,6 +6,6 @@
 #include "common.h"
 #include "util.h"
 
-void calculate(Configurations *configurations, float *data);
+void calculate(Configurations *configurations, MandelbrotData *data);
 
 #endif

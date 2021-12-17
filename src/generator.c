@@ -8,7 +8,7 @@ int generate(Configurations *configurations)
     float zoom = configurations->zoom;
     int maxIterations = configurations->maxIterations;
 
-    float *data = malloc(sizeof(float) * imageSize * imageSize);
+    MandelbrotData *data = malloc(sizeof(MandelbrotData) * imageSize * imageSize);
     if (data == NULL)
     {
         printf("Failed to allocate memory for data.\n");
