@@ -104,7 +104,10 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_mandelbrot_OBJECTS = $(top_builddir)/src/main.$(OBJEXT) \
-	$(top_builddir)/src/mandelbrot.$(OBJEXT) \
+	$(top_builddir)/src/stb_image_write.$(OBJEXT) \
+	$(top_builddir)/src/generator.$(OBJEXT) \
+	$(top_builddir)/src/convertor.$(OBJEXT) \
+	$(top_builddir)/src/calculator.$(OBJEXT) \
 	$(top_builddir)/src/util.$(OBJEXT)
 mandelbrot_OBJECTS = $(am_mandelbrot_OBJECTS)
 mandelbrot_LDADD = $(LDADD)
@@ -123,8 +126,11 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = $(top_builddir)/src/$(DEPDIR)/main.Po \
-	$(top_builddir)/src/$(DEPDIR)/mandelbrot.Po \
+am__depfiles_remade = $(top_builddir)/src/$(DEPDIR)/calculator.Po \
+	$(top_builddir)/src/$(DEPDIR)/convertor.Po \
+	$(top_builddir)/src/$(DEPDIR)/generator.Po \
+	$(top_builddir)/src/$(DEPDIR)/main.Po \
+	$(top_builddir)/src/$(DEPDIR)/stb_image_write.Po \
 	$(top_builddir)/src/$(DEPDIR)/util.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -278,11 +284,17 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 mandelbrot_SOURCES = $(top_srcdir)/src/main.c \
-    $(top_srcdir)/src/mandelbrot.c \
+    $(top_srcdir)/src/stb_image_write.c \
+    $(top_srcdir)/src/generator.c \
+    $(top_srcdir)/src/convertor.c \
+    $(top_srcdir)/src/calculator.c \
     $(top_srcdir)/src/util.c
 
 EXTRA_DIST = $(top_srcdir)/include/stb_image_write.h \
-    $(top_srcdir)/include/mandelbrot.h \
+    $(top_srcdir)/include/generator.h \
+    $(top_srcdir)/include/convertor.h \
+    $(top_srcdir)/include/calculator.h \
+    $(top_srcdir)/include/common.h \
     $(top_srcdir)/include/util.h
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
@@ -390,7 +402,16 @@ $(top_builddir)/src/$(DEPDIR)/$(am__dirstamp):
 $(top_builddir)/src/main.$(OBJEXT):  \
 	$(top_builddir)/src/$(am__dirstamp) \
 	$(top_builddir)/src/$(DEPDIR)/$(am__dirstamp)
-$(top_builddir)/src/mandelbrot.$(OBJEXT):  \
+$(top_builddir)/src/stb_image_write.$(OBJEXT):  \
+	$(top_builddir)/src/$(am__dirstamp) \
+	$(top_builddir)/src/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/src/generator.$(OBJEXT):  \
+	$(top_builddir)/src/$(am__dirstamp) \
+	$(top_builddir)/src/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/src/convertor.$(OBJEXT):  \
+	$(top_builddir)/src/$(am__dirstamp) \
+	$(top_builddir)/src/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/src/calculator.$(OBJEXT):  \
 	$(top_builddir)/src/$(am__dirstamp) \
 	$(top_builddir)/src/$(DEPDIR)/$(am__dirstamp)
 $(top_builddir)/src/util.$(OBJEXT):  \
@@ -408,8 +429,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/src/$(DEPDIR)/calculator.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/src/$(DEPDIR)/convertor.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/src/$(DEPDIR)/generator.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/src/$(DEPDIR)/main.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/src/$(DEPDIR)/mandelbrot.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/src/$(DEPDIR)/stb_image_write.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/src/$(DEPDIR)/util.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -704,8 +728,11 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f $(top_builddir)/src/$(DEPDIR)/main.Po
-	-rm -f $(top_builddir)/src/$(DEPDIR)/mandelbrot.Po
+		-rm -f $(top_builddir)/src/$(DEPDIR)/calculator.Po
+	-rm -f $(top_builddir)/src/$(DEPDIR)/convertor.Po
+	-rm -f $(top_builddir)/src/$(DEPDIR)/generator.Po
+	-rm -f $(top_builddir)/src/$(DEPDIR)/main.Po
+	-rm -f $(top_builddir)/src/$(DEPDIR)/stb_image_write.Po
 	-rm -f $(top_builddir)/src/$(DEPDIR)/util.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -754,8 +781,11 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f $(top_builddir)/src/$(DEPDIR)/main.Po
-	-rm -f $(top_builddir)/src/$(DEPDIR)/mandelbrot.Po
+		-rm -f $(top_builddir)/src/$(DEPDIR)/calculator.Po
+	-rm -f $(top_builddir)/src/$(DEPDIR)/convertor.Po
+	-rm -f $(top_builddir)/src/$(DEPDIR)/generator.Po
+	-rm -f $(top_builddir)/src/$(DEPDIR)/main.Po
+	-rm -f $(top_builddir)/src/$(DEPDIR)/stb_image_write.Po
 	-rm -f $(top_builddir)/src/$(DEPDIR)/util.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic

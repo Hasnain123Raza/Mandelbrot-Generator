@@ -1,16 +1,15 @@
-#include "mandelbrot.h"
+#include "calculator.h"
 
 static int solve(float cx, float cy, int iterations);
 
-void mandelbrot(
-    int imageSize,
-    float xPosition,
-    float yPosition,
-    float zoom,
-    int maxIterations,
-    unsigned char *imageData
-)
+void calculate(Configurations *configurations, float *data)
 {
+    int imageSize = configurations->imageSize;
+    float xPosition = configurations->xPosition;
+    float yPosition = configurations->yPosition;
+    float zoom = configurations->zoom;
+    int maxIterations = configurations->maxIterations;
+
     double startTime = tick();
     for (int y = 0; y < imageSize; y++)
     {
@@ -19,16 +18,14 @@ void mandelbrot(
             float cx = xPosition + ((float) x - (float) imageSize / 2.0f) * zoom / (float) imageSize;
             float cy = yPosition + ((float) (imageSize - (y + 1)) - (float) imageSize / 2.0f) * zoom / (float) imageSize;
 
-            float color = (float) solve(cx, cy, maxIterations) / (float) maxIterations;
+            float convergenceScore = (float) solve(cx, cy, maxIterations) / (float) maxIterations;
 
-            int index = (y * imageSize + x) * 3;
-            imageData[index] = (unsigned char) (color * 255.0f);
-            imageData[index + 1] = (unsigned char) (color * 255.0f);
-            imageData[index + 2] = (unsigned char) (color * 255.0f);
+            int index = y * imageSize + x;
+            data[index] = convergenceScore;
         }
     }
     double endTime = tick();
-    printf("Time to generate Mandelbrot fractal: %f\n", endTime - startTime);
+    printf("Time to generate Mandelbrot convergence set: %f\n", endTime - startTime);
 }
 
 static int solve(float cx, float cy, int iterations)
