@@ -23,7 +23,12 @@ int generate(Configurations *configurations)
         return 1;
     }
 
-    calculate(configurations, data);
+    if (calculate(configurations, data) != 0)
+    {
+        free(data);
+        free(image);
+        return 1;
+    }
     convert(configurations, data, image);
     free(data);
 

@@ -14,8 +14,9 @@ int main(int argc, char *argv[])
         .yPosition = DEFAULT_Y_POSITION,
         .zoom = DEFAULT_ZOOM,
         .maxIterations = DEFAULT_MAX_ITERATIONS,
-        .imageName = NULL,
-        .colorMode = DEFAULT_COLOR_MODE
+        .maxThreads = DEFAULT_MAX_THREADS,
+        .colorMode = DEFAULT_COLOR_MODE,
+        .imageName = NULL
     };
 
     if (argc > 1)
@@ -37,7 +38,10 @@ int main(int argc, char *argv[])
         configurations.colorMode = atoi(argv[6]);
 
     if (argc > 7)
-        configurations.imageName = argv[7];
+        configurations.maxThreads = atoi(argv[7]);
+
+    if (argc > 8)
+        configurations.imageName = argv[8];
 
     printf("Using the following parameters to generate the Mandelbrot Fractal:\n");
     printf("Image size: %d\n", configurations.imageSize);
@@ -46,6 +50,9 @@ int main(int argc, char *argv[])
     printf("Zoom: %f\n", configurations.zoom);
     printf("Max iterations: %d\n", configurations.maxIterations);
     printf("Color mode: %d\n", configurations.colorMode);
+#if MULTITHREADING == 1
+    printf("Max threads: %d\n", configurations.maxThreads);
+#endif
 
     int result = generate(&configurations);
     if (result != 0)

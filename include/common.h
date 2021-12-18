@@ -12,8 +12,9 @@ typedef struct {
     float yPosition;
     float zoom;
     int maxIterations;
-    char *imageName;
     ColorMode colorMode;
+    int maxThreads;
+    char *imageName;
 } Configurations;
 
 typedef struct {

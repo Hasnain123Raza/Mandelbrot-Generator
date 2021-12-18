@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This project is for generating Mandelbrot fractal images. It currently supports single precision. In the near future, it will support double precision and arbitrary precision.
+This project is for generating Mandelbrot fractal images. It is multithreading and can take advantage of multiple CPU cores via parallel processing. It currently supports single precision. In the near future, it will support double precision and arbitrary precision.
 
 ## Implementation Details
 
@@ -10,7 +10,7 @@ This project uses Mandelbrot convergence set (https://en.wikipedia.org/wiki/Mand
 
 ## Usage
 
-The program accepts six command line arguments:
+The program accepts eight command line arguments:
 
 ### Image Size
 
@@ -34,6 +34,10 @@ This is an integer argument with the default value of 0. This can be used to alt
 
 0       Simple Grayscale
 1       Smooth Grayscale
+
+### Maximum Threads
+
+This is an integer argument with the default value of 1. If the system has pthreads available and multiple cores, increasing the number of threads can increase performance.
 
 ### Output Image
 
