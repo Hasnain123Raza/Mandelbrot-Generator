@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <mpfr.h>
 
 #include "config.h"
 #include "common.h"

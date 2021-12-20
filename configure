@@ -2702,6 +2702,8 @@ ac_config_files="$ac_config_files Makefile"
 
 
 pthread_available=no
+gmp_available=no
+mpfr_available=no
 
 # Checks for programs.
 ac_ext=c
@@ -3812,6 +3814,118 @@ if test "$ac_res" != no; then :
   pthread_available=yes
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing __gmpz_init" >&5
+$as_echo_n "checking for library containing __gmpz_init... " >&6; }
+if ${ac_cv_search___gmpz_init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char __gmpz_init ();
+int
+main ()
+{
+return __gmpz_init ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' gmp; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search___gmpz_init=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search___gmpz_init+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search___gmpz_init+:} false; then :
+
+else
+  ac_cv_search___gmpz_init=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search___gmpz_init" >&5
+$as_echo "$ac_cv_search___gmpz_init" >&6; }
+ac_res=$ac_cv_search___gmpz_init
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  gmp_available=yes
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing mpfr_init" >&5
+$as_echo_n "checking for library containing mpfr_init... " >&6; }
+if ${ac_cv_search_mpfr_init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char mpfr_init ();
+int
+main ()
+{
+return mpfr_init ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' mpfr; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib -lgmp $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_mpfr_init=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_mpfr_init+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_mpfr_init+:} false; then :
+
+else
+  ac_cv_search_mpfr_init=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_mpfr_init" >&5
+$as_echo "$ac_cv_search_mpfr_init" >&6; }
+ac_res=$ac_cv_search_mpfr_init
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  mpfr_available=yes
+fi
+
 
 # Checks for header files.
 if test "x${pthread_available}" = xyes; then
@@ -4248,19 +4362,69 @@ $as_echo "$as_me: WARNING:
     multithreading=no
 fi
 
-if test "x${multithreading}" = xyes; then
-
-$as_echo "#define MULTITHREADING 1" >>confdefs.h
+if test "x${gmp_available}" = xyes; then
+    for ac_header in gmp.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "gmp.h" "ac_cv_header_gmp_h" "$ac_includes_default"
+if test "x$ac_cv_header_gmp_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_GMP_H 1
+_ACEOF
 
 else
+  gmp_avaiable=no
+fi
 
-$as_echo "#define MULTITHREADING 0" >>confdefs.h
+done
 
+fi
+
+if test "x${gmp_available}" = xno; then
+    as_fn_error $? "
+        --------------------------------
+        Unable to find gmp library or
+        the header. Please download
+        from here https://gmplib.org/
+        --------------------------------
+    " "$LINENO" 5
+else
+    if test "x${mpfr_available}" = xyes; then
+        for ac_header in mpfr.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "mpfr.h" "ac_cv_header_mpfr_h" "
+            #include <gmp.h>
+
+"
+if test "x$ac_cv_header_mpfr_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_MPFR_H 1
+_ACEOF
+
+else
+  mpfr_available=no
+fi
+
+done
+
+    fi
+
+    if test "x${mpfr_available}" = xno; then
+        as_fn_error $? "
+            --------------------------------
+            Unable to find mpfr library or
+            the header. Please download
+            from here https://www.mpfr.org/
+            --------------------------------
+        " "$LINENO" 5
+    fi
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
+
+
+$as_echo "#define DEFAULT_PRECISION 16" >>confdefs.h
 
 
 $as_echo "#define DEFAULT_IMAGE_SIZE 512" >>confdefs.h
@@ -4286,6 +4450,16 @@ $as_echo "#define DEFAULT_COLOR_MODE 0" >>confdefs.h
 
 $as_echo "#define DEFAULT_IMAGE_OUTPUT \"mandelbrot.jpg\"" >>confdefs.h
 
+
+if test "x${multithreading}" = xyes; then
+
+$as_echo "#define MULTITHREADING 1" >>confdefs.h
+
+else
+
+$as_echo "#define MULTITHREADING 0" >>confdefs.h
+
+fi
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure

@@ -15,6 +15,9 @@
 /* The default max threads */
 #undef DEFAULT_MAX_THREADS
 
+/* The default floating point precision */
+#undef DEFAULT_PRECISION
+
 /* The default x position */
 #undef DEFAULT_X_POSITION
 
@@ -24,11 +27,17 @@
 /* The default zoom */
 #undef DEFAULT_ZOOM
 
+/* Define to 1 if you have the <gmp.h> header file. */
+#undef HAVE_GMP_H
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <mpfr.h> header file. */
+#undef HAVE_MPFR_H
 
 /* Define to 1 if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H

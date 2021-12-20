@@ -6,11 +6,15 @@ This project is for generating Mandelbrot fractal images. It is multithreading a
 
 ## Implementation Details
 
-This project uses Mandelbrot convergence set (https://en.wikipedia.org/wiki/Mandelbrot_set) equation to generate the fractal. It uses the execellent stbi header-only library to write the image data into a file (https://github.com/nothings/stb).
+This project uses Mandelbrot convergence set (https://en.wikipedia.org/wiki/Mandelbrot_set) equation to generate the fractal. It uses the execellent stbi header-only library to write the image data into a file (https://github.com/nothings/stb). It uses GMP and MPFR to get arbitrary precision for floating point calculations.
 
 ## Usage
 
 The program accepts eight command line arguments:
+
+### Precision
+
+This is an integer argument with the default value of 16. Increasing this will improve floating point precision which is very crucial if you are generating a very zoomed in image.
 
 ### Image Size
 
@@ -45,8 +49,10 @@ This is a string argument with the default value of "mandelbrot.jpg". Note that 
 
 ### Note
 
-The arguments must be specified in the order they are listed here. Any unspecified arguments will assume default values. Invoking without any arguments is similar to invoking like so: `mandelbrot 512 -0.75 0.0 3.0 512 mandelbrot.jpg`
+The arguments must be specified in the order they are listed here. Any unspecified arguments will assume default values.
 
 ## Installation
+
+You need to first download and install GMP from https://gmplib.org/ and MPFR from https://www.mpfr.org/.
 
 Clone this repository and navigate to the project root directory. Run `mkdir build && cd build` then run `../configure` then run `make` then run `make install`. You should be able to run the program using `mandelbrot`. You can uninstall it by running `make uninstall`.

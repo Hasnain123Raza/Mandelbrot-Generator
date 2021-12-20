@@ -2,6 +2,7 @@
 #define GENERATOR_H
 
 #include <stdio.h>
+#include <mpfr.h>
 
 #include "stb_image_write.h"
 

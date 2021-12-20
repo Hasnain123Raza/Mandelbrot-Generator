@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <mpfr.h>
 
 #include "common.h"
 #include "util.h"

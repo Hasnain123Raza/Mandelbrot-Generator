@@ -47,8 +47,10 @@ static float simpleGrayscaleColor(int maxIterations, MandelbrotData datum)
 
 static float smoothGrayscaleColor(int maxIterations, MandelbrotData datum)
 {
+    float xn = mpfr_get_flt(datum.xn, MPFR_RNDN);
+    float yn = mpfr_get_flt(datum.yn, MPFR_RNDN);
     float color = (float) datum.iterations;
     if (datum.iterations < maxIterations)
-        color = ((float) datum.iterations + 1.0f) - log(log(datum.xn * datum.xn + datum.yn * datum.yn));
+        color = ((float) datum.iterations + 1.0f) - log(log(xn * xn + yn * yn));
     return color / (float) maxIterations;
 }

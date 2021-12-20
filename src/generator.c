@@ -2,17 +2,19 @@
 
 int generate(Configurations *configurations)
 {
+    mpfr_prec_t precision = configurations->precision;
     int imageSize = configurations->imageSize;
-    float xPosition = configurations->xPosition;
-    float yPosition = configurations->yPosition;
-    float zoom = configurations->zoom;
-    int maxIterations = configurations->maxIterations;
 
     MandelbrotData *data = malloc(sizeof(MandelbrotData) * imageSize * imageSize);
     if (data == NULL)
     {
         printf("Failed to allocate memory for data.\n");
         return 1;
+    }
+    for (int counter = 0; counter < imageSize * imageSize; counter++)
+    {
+        mpfr_init2(data[counter].xn, precision);
+        mpfr_init2(data[counter].yn, precision);
     }
 
     unsigned char *image = malloc(sizeof(unsigned char) * imageSize * imageSize * 3);
@@ -30,6 +32,11 @@ int generate(Configurations *configurations)
         return 1;
     }
     convert(configurations, data, image);
+    for (int counter = 0; counter < imageSize * imageSize; counter++)
+    {
+        mpfr_clear(data[counter].xn);
+        mpfr_clear(data[counter].yn);
+    }
     free(data);
 
     double startTime = tick();

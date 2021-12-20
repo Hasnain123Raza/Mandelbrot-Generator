@@ -3,14 +3,12 @@
 #if MULTITHREADING == 1
 static void multithreadedCalculate(ThreadData *threadDatum);
 #endif
-static MandelbrotData solve(float cx, float cy, int iterations);
+static MandelbrotData solve(mpfr_t cx, mpfr_t cy, int precision, int maxIterations);
 
 int calculate(Configurations *configurations, MandelbrotData *data)
 {
+    mpfr_prec_t precision = configurations->precision;
     int imageSize = configurations->imageSize;
-    float xPosition = configurations->xPosition;
-    float yPosition = configurations->yPosition;
-    float zoom = configurations->zoom;
     int maxIterations = configurations->maxIterations;
     int maxThreads = configurations->maxThreads;
     float lastPercentComplete = 0.0f;
@@ -18,6 +16,9 @@ int calculate(Configurations *configurations, MandelbrotData *data)
     double startTime = tick();
     if (maxThreads == 1)
     {
+        mpfr_t temp;
+        mpfr_init2(temp, precision);
+
         for (int y = 0; y < imageSize; y++)
         {
             float percentComplete = (float) y / (float) imageSize;
@@ -29,18 +30,38 @@ int calculate(Configurations *configurations, MandelbrotData *data)
 
             for (int x = 0; x < imageSize; x++)
             {
-                float cx = xPosition + ((float) x - (float) imageSize / 2.0f) * zoom / (float) imageSize;
-                float cy = yPosition + ((float) (imageSize - (y + 1)) - (float) imageSize / 2.0f) * zoom / (float) imageSize;
-
-                MandelbrotData solution = solve(cx, cy, maxIterations);
-
                 int index = y * imageSize + x;
+                mpfr_t *cx = &data[index].xn;
+                mpfr_t *cy = &data[index].yn;
+                
+                mpfr_div_ui(*cx, configurations->zoom, imageSize, MPFR_RNDN);
+                mpfr_set_ui(temp, imageSize, MPFR_RNDN);
+                mpfr_div_ui(temp, temp, 2, MPFR_RNDN);
+                mpfr_neg(temp, temp, MPFR_RNDN);
+                mpfr_add_ui(temp, temp, x, MPFR_RNDN);
+                mpfr_mul(*cx, *cx, temp, MPFR_RNDN);
+                mpfr_add(*cx, *cx, configurations->xPosition, MPFR_RNDN);
+
+                mpfr_div_ui(*cy, configurations->zoom, imageSize, MPFR_RNDN);
+                mpfr_set_ui(temp, imageSize, MPFR_RNDN);
+                mpfr_div_ui(temp, temp, 2, MPFR_RNDN);
+                mpfr_neg(temp, temp, MPFR_RNDN);
+                mpfr_add_ui(temp, temp, imageSize - (y + 1), MPFR_RNDN);
+                mpfr_mul(*cy, *cy, temp, MPFR_RNDN);
+                mpfr_add(*cy, *cy, configurations->yPosition, MPFR_RNDN);
+
+                MandelbrotData solution = solve(*cx, *cy, precision, maxIterations);
+
                 data[index].iterations = solution.iterations;
-                data[index].xn = solution.xn;
-                data[index].yn = solution.yn;
+                mpfr_swap(data[index].xn, solution.xn);
+                mpfr_swap(data[index].yn, solution.yn);
+
+                mpfr_clear(solution.xn);
+                mpfr_clear(solution.yn);
             }
         }
 
+        mpfr_clear(temp);
         printf("100%% complete\n");
     }
 #if MULTITHREADING == 1
@@ -119,11 +140,12 @@ int calculate(Configurations *configurations, MandelbrotData *data)
 static void multithreadedCalculate(ThreadData *threadDatum)
 {
     Configurations *configurations = threadDatum->configurations;
+    mpfr_prec_t precision = configurations->precision;
     int imageSize = configurations->imageSize;
-    float xPosition = configurations->xPosition;
-    float yPosition = configurations->yPosition;
-    float zoom = configurations->zoom;
     int maxIterations = configurations->maxIterations;
+
+    mpfr_t temp;
+    mpfr_init2(temp, precision);
 
     for (int y = threadDatum->start; y < threadDatum->end; y++)
     {
@@ -139,38 +161,78 @@ static void multithreadedCalculate(ThreadData *threadDatum)
 
         for (int x = 0; x < imageSize; x++)
         {
-            float cx = xPosition + ((float) x - (float) imageSize / 2.0f) * zoom / (float) imageSize;
-            float cy = yPosition + ((float) (imageSize - (y + 1)) - (float) imageSize / 2.0f) * zoom / (float) imageSize;
-
-            MandelbrotData solution = solve(cx, cy, maxIterations);
-
             int index = y * imageSize + x;
-            if (index >= imageSize * imageSize)
-            {
-                printf("%d, %d\n", threadDatum->end, imageSize);
-            }
+            mpfr_t *cx = &threadDatum->data[index].xn;
+            mpfr_t *cy = &threadDatum->data[index].yn;
+            
+            mpfr_div_ui(*cx, configurations->zoom, imageSize, MPFR_RNDN);
+            mpfr_set_ui(temp, imageSize, MPFR_RNDN);
+            mpfr_div_ui(temp, temp, 2, MPFR_RNDN);
+            mpfr_neg(temp, temp, MPFR_RNDN);
+            mpfr_add_ui(temp, temp, x, MPFR_RNDN);
+            mpfr_mul(*cx, *cx, temp, MPFR_RNDN);
+            mpfr_add(*cx, *cx, configurations->xPosition, MPFR_RNDN);
+
+            mpfr_div_ui(*cy, configurations->zoom, imageSize, MPFR_RNDN);
+            mpfr_set_ui(temp, imageSize, MPFR_RNDN);
+            mpfr_div_ui(temp, temp, 2, MPFR_RNDN);
+            mpfr_neg(temp, temp, MPFR_RNDN);
+            mpfr_add_ui(temp, temp, imageSize - (y + 1), MPFR_RNDN);
+            mpfr_mul(*cy, *cy, temp, MPFR_RNDN);
+            mpfr_add(*cy, *cy, configurations->yPosition, MPFR_RNDN);
+
+            MandelbrotData solution = solve(*cx, *cy, precision, maxIterations);
+
             threadDatum->data[index].iterations = solution.iterations;
-            threadDatum->data[index].xn = solution.xn;
-            threadDatum->data[index].yn = solution.yn;
+            mpfr_swap(threadDatum->data[index].xn, solution.xn);
+            mpfr_swap(threadDatum->data[index].yn, solution.yn);
+
+            mpfr_clear(solution.xn);
+            mpfr_clear(solution.yn);
         }
     }
+
+    mpfr_clear(temp);
+
+    mpfr_free_cache();
+    mpfr_free_pool();
 }
 #endif
 
-static MandelbrotData solve(float cx, float cy, int iterations)
+static MandelbrotData solve(mpfr_t cx, mpfr_t cy, int precision, int maxIterations)
 {
-    float x = 0.0f;
-    float y = 0.0f;
-    int i = 0;
-    for (i = 0; i < iterations; i++)
+    MandelbrotData solution;
+    mpfr_t temp1;
+    mpfr_t temp2;
+
+    mpfr_init2(solution.xn, precision);
+    mpfr_init2(solution.yn, precision);
+    mpfr_init2(temp1, precision);
+    mpfr_init2(temp2, precision);
+    mpfr_set_flt(solution.xn, 0.0f, MPFR_RNDN);
+    mpfr_set_flt(solution.yn, 0.0f, MPFR_RNDN);
+
+    int iterations = 0;
+    for (iterations = 0; iterations < maxIterations; iterations++)
     {
-        float x2 = x * x;
-        float y2 = y * y;
-        if (x2 + y2 > 4.0f)
+        mpfr_sqr(temp1, solution.xn, MPFR_RNDN);
+        mpfr_sqr(temp2, solution.yn, MPFR_RNDN);
+
+        mpfr_mul(solution.yn, solution.yn, solution.xn, MPFR_RNDN);
+        mpfr_mul_ui(solution.yn, solution.yn, 2, MPFR_RNDN);
+        mpfr_add(solution.yn, solution.yn, cy, MPFR_RNDN);
+    
+        mpfr_sub(solution.xn, temp1, temp2, MPFR_RNDN);
+        mpfr_add(solution.xn, solution.xn, cx, MPFR_RNDN);
+
+        mpfr_add(temp1, temp1, temp2, MPFR_RNDN);
+        if (mpfr_cmp_ui(temp1, 4) > 0)
             break;
-        y = 2.0f * x * y + cy;
-        x = x2 - y2 + cx;
     }
 
-    return (MandelbrotData) {i, x, y};
+    mpfr_clear(temp1);
+    mpfr_clear(temp2);
+
+    solution.iterations = iterations;
+    return solution;
 }
